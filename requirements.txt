@@ -1,0 +1,7 @@
+opencv-python==4.10.0.82 
+opencv-contrib-python
+numpy
+scipy
+matplotlib
+Pillow
+imageio==2.34.1
