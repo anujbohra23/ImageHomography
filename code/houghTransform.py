@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 def main(argv):
 
     default_file = (
-        r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\anujwarp\input\Angled\A_Coffee.jpg"
+        r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\anujwarp\input\Angled\A_Bhujia.jpg"
     )
     filename = argv[0] if len(argv) > 0 else default_file
 
