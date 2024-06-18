@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 def process_image(image_path, output_directory):
     """
-    Process a single image, apply Hough transform, and save the output.
+    Process a single image, apply Hough transform, detect angles between lines, and save the output.
     """
     src = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
     if src is None:
@@ -16,12 +16,12 @@ def process_image(image_path, output_directory):
         return
 
     dst = cv.Canny(src, 50, 200, None, 3)
-
-    # Copy edges to the images that will display the results in BGR
     cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
     cdstP = np.copy(cdst)
 
     lines = cv.HoughLines(dst, 1, np.pi / 180, 150, None, 0, 0)
+    angles = []
+
     if lines is not None:
         for i in range(len(lines)):
             rho = lines[i][0][0]
@@ -34,11 +34,29 @@ def process_image(image_path, output_directory):
             pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * (a)))
             cv.line(cdst, pt1, pt2, (0, 0, 255), 3, cv.LINE_AA)
 
+            # Calculate the angle in degrees
+            angle = np.degrees(theta)
+            angles.append(angle)
+
     linesP = cv.HoughLinesP(dst, 1, np.pi / 180, 50, None, 50, 10)
     if linesP is not None:
         for i in range(len(linesP)):
             l = linesP[i][0]
             cv.line(cdstP, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 3, cv.LINE_AA)
+
+    # Display angles on the image
+    if angles:
+        angles = np.sort(angles)
+        for i in range(len(angles)):
+            cv.putText(
+                cdst,
+                f"{angles[i]:.2f}",
+                (50, 50 + i * 30),
+                cv.FONT_HERSHEY_SIMPLEX,
+                1,
+                (255, 255, 255),
+                2,
+            )
 
     # Using matplotlib to display images
     plt.figure(figsize=(15, 10))
