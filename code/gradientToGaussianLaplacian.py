@@ -4,20 +4,14 @@ import matplotlib.pyplot as plt
 import os
 
 
-def apply_gradient_filter(image):
-    grad_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-    grad_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+def apply_laplacian_filter(image):
+    # Apply the Laplacian filter
+    laplacian = cv2.Laplacian(image, cv2.CV_64F)
 
-    # Compute the gradient magnitude
-    gradient_magnitude = cv2.magnitude(grad_x, grad_y)
+    # Convert the Laplacian result to 8-bit image
+    laplacian_8u = np.uint8(np.absolute(laplacian))
 
-    # Normalize the gradient magnitude
-    gradient_magnitude = cv2.normalize(
-        gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX
-    )
-    gradient_magnitude = np.uint8(gradient_magnitude)
-
-    return gradient_magnitude
+    return laplacian_8u
 
 
 def blur_and_highlight_edges(image_path, output_path):
@@ -28,27 +22,32 @@ def blur_and_highlight_edges(image_path, output_path):
         print(f"Error: Unable to load image {image_path}")
         return
 
-    # Apply the gradient filter
-    gradient_image = apply_gradient_filter(image)
+    # Apply the Laplacian filter
+    gradient_image = apply_laplacian_filter(image)
+
+    # Apply Gaussian blur to the gradient image
     blurred_image = cv2.GaussianBlur(gradient_image, (51, 51), 0)
+
+    # Detect edges using Canny edge detection
     edges = cv2.Canny(blurred_image, 50, 150)
+
+    # Convert edges to a 3-channel image
     edges_colored = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
 
+    # Highlight edges in the original image
     highlighted_image = np.where(edges_colored == 255, 255, blurred_image[:, :, None])
+
+    # Generate and save the figure
     plt.figure(figsize=(15, 5))
 
     # Original image
-    plt.subplot(1, 3, 1)
+    plt.subplot(1, 2, 1)
     plt.imshow(cv2.cvtColor(image, cv2.COLOR_GRAY2RGB))
     plt.title("Original Image")
     plt.axis("off")
 
-    plt.subplot(1, 3, 2)
-    plt.imshow(cv2.cvtColor(gradient_image, cv2.COLOR_GRAY2RGB))
-    plt.title("Gradient Image")
-    plt.axis("off")
-
-    plt.subplot(1, 3, 3)
+    # Blurred and highlighted edges
+    plt.subplot(1, 2, 2)
     plt.imshow(cv2.cvtColor(highlighted_image, cv2.COLOR_BGR2RGB))
     plt.title("Blurred & Highlighted Edges")
     plt.axis("off")
@@ -76,8 +75,6 @@ if __name__ == "__main__":
     input_directory = (
         r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\Dataset\IIT Patna Dataset\AngledImages"
     )
-    output_directory = (
-        r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\anujwarp\gradientToGaussianImages"
-    )
+    output_directory = r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\anujwarp\gradientToGaussianLaplacianImages"
 
     main(input_directory, output_directory)
