@@ -42,9 +42,9 @@ def calculate_inliers(image1, image2, homography):
     dist = np.sqrt(np.sum((pts1 - pts2_transformed) ** 2, axis=2))
 
     # Find inliers (considering a threshold of 10 pixels)
-    inliers = matches[dist < 10]
+    inliers = [m for i, m in enumerate(matches) if dist[i] < 10]
 
-    return inliers
+    return inliers, kp1, kp2
 
 
 def process_image(angled_image_path, output_directory):
@@ -64,15 +64,17 @@ def process_image(angled_image_path, output_directory):
     warped_image = warp_image(new_image_angled, homography_anuj)
 
     # Calculate inlier matches between original and warped image
-    inliers = calculate_inliers(new_image_angled, warped_image, homography_anuj)
+    inliers, kp1, kp2 = calculate_inliers(
+        new_image_angled, warped_image, homography_anuj
+    )
     print(f"Number of inlier matches: {len(inliers)}")
 
     # Draw inlier matches
     matched_image = cv2.drawMatches(
         new_image_angled,
-        orb.detect(new_image_angled, None),
+        kp1,
         warped_image,
-        orb.detect(warped_image, None),
+        kp2,
         inliers,
         None,
         flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
