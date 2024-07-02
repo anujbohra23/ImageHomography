@@ -92,7 +92,11 @@ def main(input_directory, output_directory):
 
 
 if __name__ == "__main__":
-    input_directory = r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\Dataset\IIT Patna Dataset\Straight Images"
-    output_directory = r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\maskingStretchingAndNegationImagesAngled"
+    input_directory = (
+        r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\Dataset\IIT Patna Dataset\Shelf Images"
+    )
+    output_directory = (
+        r"C:\Users\Anuj Bohra\Desktop\IIT_Patna\maskingStretchingAndNegationImagesShelf"
+    )
 
     main(input_directory, output_directory)
