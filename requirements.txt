@@ -5,3 +5,4 @@ scipy
 matplotlib
 Pillow
 imageio==2.34.1
+scikit-learn
